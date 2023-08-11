@@ -15,7 +15,7 @@ const classSchema = new Schema(
       type: String,
       required: true,
     },
-    students: [{ name: String, rollno: Number }],
+    students: [{ name: String, rollno: Number, div: String }],
     location: [{ latitude: Number, longitude: Number }],
   },
   { timestamps: true }

@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const App = () => {
-  const [ipAddress, setIpAddress] = useState("");
+const IPAddress = () => {
+  const [ipAddress, setIPAddress] = useState("");
 
   useEffect(() => {
-    const ip = getRemoteAddr();
-    setIpAddress(ip);
+    fetch("https://api.ipify.org?format=json")
+      .then((response) => response.json())
+      .then((data) => setIPAddress(data.ip))
+      .catch((error) => console.log(error));
   }, []);
-
   return (
     <div>
-      <h1>Your IP address is {ipAddress}</h1>
+      <h1>Your IP Address is: {ipAddress}</h1>
     </div>
   );
 };
-
-export default App;
+export default IPAddress;

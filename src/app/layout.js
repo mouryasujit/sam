@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import { Inter } from "next/font/google";
 
@@ -11,8 +12,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="main-container max-w-7xl mx-auto ">{children}</div>
+      <body className="bg-gradient-to-b from-green-400 to-blue-400 ">
+       
+        <div className="main-container max-w-7xl mx-auto  ">{children}</div>
       </body>
     </html>
   );
