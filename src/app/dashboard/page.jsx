@@ -6,11 +6,13 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+
 const Dashboard = () => {
   // const session = useSession();
 
   return (
     <div className=" min-h-screen w-full mx-auto flex md:flex-row flex-col-reverse mt-14 md:my-0 items-center justify-center gap-4 cursor-pointer  ">
+      
       <div className="flex-1 h-full flex flex-col gap-4 items-center "></div>
       <form
         className=" w-[90vw] md:w-[40%]  flex flex-col gap-3  "

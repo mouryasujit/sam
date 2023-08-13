@@ -4,9 +4,95 @@ import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import Image from "next/image";
 import Ipaddress from "@/Components/GetIpadd";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
+import { useState } from "react";
+import axios from "axios";
+const { v4: uuidv4 } = require("uuid");
 
 export default function Home() {
-  const notify = () => toast("Wow so easy!");
+  const [unique, setUnique] = useState();
+  const [latitude, setLatitude] = useState();
+  const [longitude, setLongitude] = useState();
+  const [ipAddTeacher, setIpAddTeacher] = useState();
+  const [classCreater, setClass] = useState({
+    name: "",
+    classname: "",
+    email: "",
+  });
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    setClass((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  // get unique code
+
+  function generateUniqueCode() {
+    const uniqueId = uuidv4().replace(/-/g, ""); // Remove dashes from UUID
+    const uniqueCode = uniqueId.slice(0, 8); // Extract the first 8 characters
+
+    setUnique(uniqueCode);
+  }
+
+  const getLocationandIp = async (e) => {
+    e.preventDefault();
+
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+
+      const response = await fetch("https://api.ipify.org?format=json");
+      const data = await response.json();
+      setIpAddTeacher(data.ip);
+    } catch (error) {
+      console.log("Error retrieving location or IP:", error);
+    }
+  };
+
+  const handlePost = async (e) => {
+    e.preventDefault();
+    try {
+      const classData = {
+        name: classCreater.name,
+        classname: classCreater.classname,
+        email: classCreater.email,
+        passcode: unique,
+        location: { latitude, longitude },
+        ipAddTeacher: ipAddTeacher, // Value from the state
+      };
+      console.log(classData)
+      const res = await toast.promise(
+        axios.post("/api/createclass", classData),
+        {
+          position: "top-center",
+          pending: "Checking User...",
+          success: {
+            render: (response) => {
+              if (res.data.success) {
+                // Check for success property
+                return "class created successfully";
+              } else {
+                return "Try again something went wrong";
+              }
+            },
+            duration: 5000,
+          },
+          error: "Something went wrong",
+        }
+      );
+      console.log(res.data.success);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <main className="main h-screen flex justify-center items-center ">
       <div className="w-[80%]  mx-auto h-[70%] backdrop-blur backdrop-opacity-60 backdrop-filter-none shadow-md bg-white/20 rounded-md p-4 flex items-center justify-center gap-4">
@@ -31,12 +117,95 @@ export default function Home() {
             <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400  font-bold text-xl">
               Join class
             </button>
-            <button
-              onClick={notify}
-              className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl"
+            <Popup
+              trigger={
+                <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl">
+                  create class
+                </button>
+              }
+              modal // Use the modal option to make it a centered modal
+              lockScroll={true}
             >
-              create class
-            </button>
+              <div className="flex  h-max flex-col justify-center items-center   ">
+                <form className="md:w-[100%] w-[70vw] p-2 h-max flex flex-col gap-4 ">
+                  <div className="div w-full flex items-center gap-5 ">
+                    <label htmlFor="Email" className="w-[6vw]">
+                      Class Name:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Class Name"
+                      required
+                      name="classname"
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="div w-full flex items-center  gap-5 ">
+                    <label htmlFor="name" className="w-[6vw]">
+                      Name:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      required
+                      name="name"
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="div w-full flex items-center  gap-5 ">
+                    <label htmlFor="Email" className="w-[6vw]">
+                      Email:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="E-mail"
+                      required
+                      name="email"
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="div w-full flex items-center  gap-5 ">
+                    <label htmlFor="Email" className="w-max">
+                      Give location access:
+                    </label>
+                    <button
+                      className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 w-16 "
+                      onClick={getLocationandIp}
+                    >
+                      Allow
+                    </button>
+                  </div>
+                  <div className="div w-full flex  items-center  gap-5">
+                    <label htmlFor="Email" className="w-[6vw]">
+                      Passcode:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Get your passcode here"
+                      required
+                      name="email"
+                      onFocus={generateUniqueCode}
+                      value={unique || ""}
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
+                    onClick={handlePost}
+                  >
+                    Create Class
+                  </button>
+
+                  <hr className="w-full" />
+                </form>
+              </div>
+            </Popup>
           </div>
         </div>
         <ToastContainer

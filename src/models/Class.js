@@ -11,12 +11,21 @@ const classSchema = new Schema(
       type: String,
       required: true,
     },
-    code: {
+    email: {
+      type: String,
+      required: true,
+    },
+    passcode: {
       type: String,
       required: true,
     },
     students: [{ name: String, rollno: Number, div: String }],
-    location: [{ latitude: Number, longitude: Number }],
+    studentIp: [{ type: String }],
+    location: { latitude: Number, longitude: Number },
+    ipAddTeacher: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

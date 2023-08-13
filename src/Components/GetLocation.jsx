@@ -7,21 +7,7 @@ const Location = () => {
   console.log(latitude);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // console.log(position);
-          // console.log(navigator.geolocation);
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-        },
-        (error) => {
-          console.log("Error retrieving location:", error);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
+   
   }, []);
 
   return (
