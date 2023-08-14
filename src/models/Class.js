@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
-
+// google_ID=188007853627-3lug8s55dockg2tu9l5kfb5n2rjl7bqo.apps.googleusercontent.com
+// google_SECRET=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
 const classSchema = new Schema(
   {
     name: {
