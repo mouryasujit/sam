@@ -15,18 +15,41 @@ export default function Home() {
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
   const [ipAddTeacher, setIpAddTeacher] = useState();
+  const [Join, Setjoin] = useState();
   const [classCreater, setClass] = useState({
     name: "",
     classname: "",
     email: "",
   });
 
-  const handleChange = (e) => {
+  //joining class
+
+  const handlejoin = async (e) => {
     e.preventDefault();
-    setClass((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    try {
+      const joinData = {
+        passcode: Join,
+        location: { latitude, longitude },
+        studentip: ipAddTeacher,
+      };
+      const res = await toast.promise(axios.post("/api/joinclass", joinData), {
+        position: "top-center",
+        pending: "Checking details...",
+        success: {
+          render: (response) => {
+            if (res.data.success) {
+              return "class joined successfully";
+            }
+          },
+          duration: 5000,
+        },
+      });
+    } catch (error) {
+      toast.error(`${error.response.data.message}`, {
+        position: "top-center",
+        autoClose: 5000,
+      });
+    }
   };
 
   // get unique code
@@ -57,6 +80,7 @@ export default function Home() {
     }
   };
 
+  //for creating class
   const handlePost = async (e) => {
     e.preventDefault();
     try {
@@ -68,7 +92,7 @@ export default function Home() {
         location: { latitude, longitude },
         ipAddTeacher: ipAddTeacher, // Value from the state
       };
-      console.log(classData)
+      // console.log(classData);
       const res = await toast.promise(
         axios.post("/api/createclass", classData),
         {
@@ -79,19 +103,26 @@ export default function Home() {
               if (res.data.success) {
                 // Check for success property
                 return "class created successfully";
-              } else {
-                return "Try again something went wrong";
               }
             },
             duration: 5000,
           },
-          error: "Something went wrong",
         }
       );
-      console.log(res.data.success);
     } catch (error) {
-      console.log(error);
+      toast.error(`${error.response.data.message}`, {
+        position: "top-center",
+        autoClose: 5000,
+      });
     }
+  };
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    setClass((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
   return (
     <main className="main h-screen flex justify-center items-center ">
@@ -114,9 +145,54 @@ export default function Home() {
             </span>
           </h1>
           <div className="btn-contaner space-x-3 w-full ">
-            <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400  font-bold text-xl">
-              Join class
-            </button>
+            <Popup
+              trigger={
+                <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl">
+                  Join Class
+                </button>
+              }
+              modal
+              lockScroll={true}
+            >
+              <div className="flex  h-max flex-col justify-center items-center   ">
+                <form className="md:w-[100%] w-[70vw] p-2 h-max flex flex-col gap-4 ">
+                  <div className="div w-full flex items-center gap-5 ">
+                    <label htmlFor="passcode" className="w-[6vw]">
+                      Passcode:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter passcode of class"
+                      required
+                      name="passcode"
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={(e) => Setjoin(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="div w-full flex items-center  gap-5 ">
+                    <label htmlFor="Email" className="w-max">
+                      Give location access:
+                    </label>
+                    <button
+                      className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 w-16 "
+                      onClick={getLocationandIp}
+                    >
+                      Allow
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
+                    onClick={handlejoin}
+                  >
+                    Join Class
+                  </button>
+                  <hr className="w-full" />
+                </form>
+              </div>
+            </Popup>
             <Popup
               trigger={
                 <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl">

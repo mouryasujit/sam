@@ -38,22 +38,24 @@ const Login = () => {
         position: "top-center",
         pending: "Checking User...",
         success: {
-          render: (response) => {
+          render: () => {
             if (res.data.success) {
               // Check for success property
               setLogin(true);
               return "User Logged In Successfully";
             } else {
-              return "login failed";
+              return `${res.data.message}`;
             }
           },
+
           duration: 5000,
         },
-        error: "Something went wrong",
       });
-      console.log(res.data.success);
     } catch (error) {
-      console.log(error);
+      toast.error(`${error.response.data.message}`, {
+        position: "top-center",
+        autoClose: 5000,
+      });
     }
   };
 
@@ -92,7 +94,6 @@ const Login = () => {
             onChange={handleChange}
           />
           <button
-            type="submit"
             className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-16 "
             onClick={handleLogin}
           >
