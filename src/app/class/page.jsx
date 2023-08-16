@@ -33,7 +33,7 @@ const UserClass = () => {
           href="/dashboard/register"
           className="text-blue-500 underline text-center hover:text-red-500 "
         >
-          Don't have an account register
+          Dont have an account register
         </Link>
         <hr className="w-full" />
       </form>

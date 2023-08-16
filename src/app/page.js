@@ -131,6 +131,7 @@ export default function Home() {
           <Image
             src="/logo-transparent-png.png"
             className="rounded-md brightness-75 "
+            alt=""
             fill
           />
           {/* <h3 className="font-bold text-4xl w-[90%] absolute bottom-3 left-2  tracking-loose contrast-200">
