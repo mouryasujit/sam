@@ -1,5 +1,3 @@
-
-
 import { NextRequest, NextResponse } from "next/server";
 import Connect from "@/utils/db";
 import Class from "@/models/Class";
@@ -57,9 +55,12 @@ export async function POST(request) {
           { message: "Try to change passcode", error: true },
           { status: 400 }
         );
+      } else {
+        return NextResponse.json(
+          { message: "Error while saving class", error: true },
+          { status: 500 }
+        );
       }
-
-      return NextResponse.json("Error while saving class");
     }
   } catch (error) {
     console.error("Error:", error);

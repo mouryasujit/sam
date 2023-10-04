@@ -8,9 +8,11 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 const { v4: uuidv4 } = require("uuid");
 
 export default function Home() {
+  const router = useRouter();
   const [unique, setUnique] = useState();
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
@@ -38,6 +40,7 @@ export default function Home() {
         success: {
           render: (response) => {
             if (res.data.success) {
+              router.push(`/class/${res?.data?.classData._id}`);
               return "class joined successfully";
             }
           },
@@ -102,6 +105,7 @@ export default function Home() {
             render: (response) => {
               if (res.data.success) {
                 // Check for success property
+                router.push(`/class/${res?.data?.savedClass._id}`);
                 return "class created successfully";
               }
             },
@@ -109,6 +113,8 @@ export default function Home() {
           },
         }
       );
+
+      console.log(res.data);
     } catch (error) {
       toast.error(`${error.response.data.message}`, {
         position: "top-center",

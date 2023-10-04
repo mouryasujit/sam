@@ -40,6 +40,9 @@ export async function POST(request) {
     response.cookies.set("token", token, { httpOnly: true });
     return response;
   } catch (error) {
-    console.log(error);
+    return NextResponse.json(
+      { message: "Internal server error Try again" },
+      { status: 500 }
+    );
   }
 }

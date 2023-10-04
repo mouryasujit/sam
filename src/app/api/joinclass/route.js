@@ -57,7 +57,7 @@ export async function POST(request) {
     );
 
     console.log(distance);
-    if (distance > 2) {
+    if (distance > 10) {
       return NextResponse.json(
         { message: "You are not inside class" },
         { status: 401 }
@@ -75,13 +75,15 @@ export async function POST(request) {
         name: user.name,
         rollno: user.rollno,
         div: user.division,
+        Date: new Date().getDate(),
+        JoinedTime: new Date().getTime(),
       };
       classData.students.push(studentData);
     }
     await classData.save();
 
     return NextResponse.json(
-      { message: "Student added successfully", success: true },
+      { message: "Student added successfully", success: true, classData },
       { status: 200 }
     );
   } catch (error) {
