@@ -38,6 +38,7 @@ const SingleClass = () => {
             <tr>
               <th>Name</th>
               <th>Rollno</th>
+              <th>Division</th>
               <th>Joined time</th>
               <th>Date</th>
             </tr>
@@ -49,8 +50,9 @@ const SingleClass = () => {
                   <tr key={index}>
                     <td>{data?.name}</td>
                     <td>{data?.rollno}</td>
+                    <td>{data?.div}</td>
                     <td>{data?.joinedTime}</td>
-                    <td>{data?.date}</td>
+                    <td>{data?.Date}</td>
                   </tr>
                 ))
               ) : (

@@ -20,7 +20,15 @@ const classSchema = new Schema(
       type: String,
       required: true,
     },
-    students: [{ name: String, rollno: Number, div: String }],
+    students: [
+      {
+        name: { type: String },
+        rollno: { type: Number },
+        div: { type: String },
+        Date: { type: Date },
+        JoinedTime: { type: Date },
+      },
+    ],
     studentIp: [{ type: String }],
     location: { latitude: Number, longitude: Number },
     ipAddTeacher: {

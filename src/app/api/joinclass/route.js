@@ -2,7 +2,6 @@ import verifyToken from "@/utils/verifyToken";
 import User from "@/models/UserModel";
 import Class from "@/models/Class";
 import { NextResponse } from "next/server";
-// import calculateDistance from "@/utils/calculateDistance";
 import calculateDistanceInMeters from "@/utils/calculateDistance";
 
 export async function POST(request) {
@@ -25,7 +24,42 @@ export async function POST(request) {
     // console.log(user);
 
     const reqBody = await request.json();
-    const { location, studentip, passcode } = reqBody;
+    const { location, studentip, passcode, Bluetooths } = reqBody;
+
+    const classData = await Class.findOne({ passcode });
+    // console.log(classData);
+    if (!classData) {
+      return NextResponse.json(
+        { message: "Class doesnt exists check passcode" },
+        { status: 404 }
+      );
+    }
+    if (Bluetooths) {
+      if (classData.studentIp.includes(studentip)) {
+        return NextResponse.json(
+          { message: "You are already in class" },
+          { status: 400 }
+        );
+      }
+
+      classData.studentIp.push(studentip);
+      const studentData = {
+        name: user.name,
+        rollno: user.rollno,
+        div: user.division,
+        Date: new Date().getDate(),
+        JoinedTime: new Date().getTime(),
+      };
+      classData.students.push(studentData);
+
+      await classData.save();
+
+      return NextResponse.json(
+        { message: "Student added successfully", success: true, classData },
+        { status: 200 }
+      );
+    }
+
     if (
       !location ||
       location.latitude === undefined ||
@@ -37,14 +71,14 @@ export async function POST(request) {
       );
     }
 
-    const classData = await Class.findOne({ passcode });
-    // console.log(classData);
-    if (!classData) {
-      return NextResponse.json(
-        { message: "Class doesnt exists check passcode" },
-        { status: 404 }
-      );
-    }
+    // const classData = await Class.findOne({ passcode });
+    // // console.log(classData);
+    // if (!classData) {
+    //   return NextResponse.json(
+    //     { message: "Class doesnt exists check passcode" },
+    //     { status: 404 }
+    //   );
+    // }
 
     //  calculate distance
     console.log(location.latitude);

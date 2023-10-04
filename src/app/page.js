@@ -18,6 +18,7 @@ export default function Home() {
   const [longitude, setLongitude] = useState();
   const [ipAddTeacher, setIpAddTeacher] = useState();
   const [Join, Setjoin] = useState();
+  const [blueths, setbluetooths] = useState(false);
   const [classCreater, setClass] = useState({
     name: "",
     classname: "",
@@ -29,11 +30,13 @@ export default function Home() {
   const handlejoin = async (e) => {
     e.preventDefault();
     try {
-      const joinData = {
+      var joinData = {
         passcode: Join,
         location: { latitude, longitude },
         studentip: ipAddTeacher,
+        Bluetooths: blueths,
       };
+
       const res = await toast.promise(axios.post("/api/joinclass", joinData), {
         position: "top-center",
         pending: "Checking details...",
@@ -130,6 +133,34 @@ export default function Home() {
       [e.target.name]: e.target.value,
     }));
   };
+
+  const hClassCreaterBluetooth = async (e) => {
+    e.preventDefault();
+    try {
+      const device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+      });
+      console.log("Bluetooth device connected:", device);
+    } catch (error) {
+      console.error("Error connecting to Bluetooth device:", error);
+    }
+  };
+  const handleEnableBluetooth = async (e) => {
+    e.preventDefault();
+    try {
+      const device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+      });
+      console.log();
+      if (device) {
+        setbluetooths(true);
+        getLocationandIp();
+      }
+      console.log("Bluetooth device connected:", device);
+    } catch (error) {
+      console.error("Error connecting to Bluetooth device:", error);
+    }
+  };
   return (
     <main className="main h-screen flex justify-center items-center ">
       <div className="w-[80%]  mx-auto h-[70%] backdrop-blur backdrop-opacity-60 backdrop-filter-none shadow-md bg-white/20 rounded-md p-4 flex items-center justify-center gap-4">
@@ -186,6 +217,17 @@ export default function Home() {
                       onClick={getLocationandIp}
                     >
                       Allow
+                    </button>
+                  </div>
+                  <div className="div w-full flex items-center  gap-5 ">
+                    <label htmlFor="Email" className="w-max">
+                      Give Bluetooth access:
+                    </label>
+                    <button
+                      onClick={handleEnableBluetooth}
+                      className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl"
+                    >
+                      Enable Bluetooth
                     </button>
                   </div>
 
@@ -276,7 +318,17 @@ export default function Home() {
                       onChange={handleChange}
                     />
                   </div>
-
+                  <div className="div w-full flex items-center  gap-5 ">
+                    <label htmlFor="Email" className="w-max">
+                      Give Bluetooth access:
+                    </label>
+                    <button
+                      onClick={hClassCreaterBluetooth}
+                      className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl"
+                    >
+                      Enable Bluetooth
+                    </button>
+                  </div>
                   <button
                     type="submit"
                     className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
