@@ -37,6 +37,8 @@ const Login = () => {
           render: () => {
             if (res.data.success) {
               // Check for success property
+              console.log(res.data);
+              localStorage.setItem("user", JSON.stringify(res.data.TokenData));
               setLogin(true);
               return "User Logged In Successfully";
             } else {

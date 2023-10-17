@@ -186,7 +186,7 @@ export default function Home() {
             <Popup
               trigger={
                 <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl">
-                  Join Class
+                  Join Seminar
                 </button>
               }
               modal
@@ -236,7 +236,7 @@ export default function Home() {
                     className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
                     onClick={handlejoin}
                   >
-                    Join Class
+                    Join Seminar
                   </button>
                   <hr className="w-full" />
                 </form>
@@ -245,7 +245,7 @@ export default function Home() {
             <Popup
               trigger={
                 <button className="bg-gradient-to-b from-cyan-400 to-green-400 p-2 rounded-md shadow-md hover:bg-gradient-to-b hover:from-green-400 hover:to-cyan-400 font-bold text-xl">
-                  create class
+                  Create Seminar
                 </button>
               }
               modal // Use the modal option to make it a centered modal
@@ -334,7 +334,7 @@ export default function Home() {
                     className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
                     onClick={handlePost}
                   >
-                    Create Class
+                    Create Seminar
                   </button>
 
                   <hr className="w-full" />
