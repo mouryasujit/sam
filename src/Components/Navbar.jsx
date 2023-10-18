@@ -7,14 +7,14 @@ import { toast, ToastContainer } from "react-toastify";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [logout, setLogout] = useState(false);
-  const [user, setUser] = useState(localStorage.getItem("user") || null);
+  const [user, setUser] = useState(window.localStorage.getItem("user") || null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = window.localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -24,7 +24,7 @@ const Navbar = () => {
     try {
       const res = await axios.get("/api/auth/logout");
       console.log(res.data.message);
-      localStorage.setItem("user", "");
+      window.localStorage.setItem("user", "");
       toast.success(`${res.data.message}`, {
         position: "top-center",
         autoClose: 5000,
