@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -38,7 +37,7 @@ const Login = () => {
             if (res.data.success) {
               // Check for success property
               console.log(res.data);
-              window.localStorage.setItem("user", JSON.stringify(res.data.TokenData));
+              localStorage.setItem("user", JSON.stringify(res.data.TokenData));
               setLogin(true);
               return "User Logged In Successfully";
             } else {

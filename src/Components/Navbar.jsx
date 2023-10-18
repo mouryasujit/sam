@@ -7,18 +7,21 @@ import { toast, ToastContainer } from "react-toastify";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [logout, setLogout] = useState(false);
-  const [user, setUser] = useState(window.localStorage.getItem("user") || null);
+  const [user, setUser] = useState(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
   useEffect(() => {
-    const storedUser = window.localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, [user]);
+    const getUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+    getUser();
+  }, []);
 
   const handleLogout = async () => {
     try {
