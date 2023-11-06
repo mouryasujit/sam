@@ -6,7 +6,7 @@ import Image from "next/image";
 import Ipaddress from "@/Components/GetIpadd";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 const { v4: uuidv4 } = require("uuid");
@@ -161,6 +161,13 @@ export default function Home() {
       console.error("Error connecting to Bluetooth device:", error);
     }
   };
+
+  useEffect(() => {
+    const login = localStorage.getItem("user");
+    if (!login) {
+      router.push("/dashboard/login");
+    }
+  });
   return (
     <main className="main h-screen flex justify-center items-center ">
       <div className="w-[80%]  mx-auto h-[70%] backdrop-blur backdrop-opacity-60 backdrop-filter-none shadow-md bg-white/20 rounded-md p-4 flex items-center justify-center gap-4">

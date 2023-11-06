@@ -3,8 +3,10 @@ import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [logout, setLogout] = useState(false);
   const [user, setUser] = useState(null);
@@ -13,13 +15,14 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const getUser = () => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  };
+  console.log(user);
   useEffect(() => {
-    const getUser = () => {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    };
     getUser();
   }, []);
 
@@ -33,6 +36,7 @@ const Navbar = () => {
         autoClose: 5000,
       });
       setUser(null);
+      router.push("/dashboard/login");
     } catch (error) {
       toast.error(`${res.data.message}`, {
         position: "top-center",
@@ -63,7 +67,7 @@ const Navbar = () => {
                 onClick={toggleDropdown}
                 className="text-white group-hover:bg-white group-hover:text-green-500 hover:rounded-md hover:scale-125 transition-all ease-in-out font-bold text-lg "
               >
-                {user.name}
+                {user?.name?.slice(0, 8)}
                 <svg
                   className="h-4 w-4 inline-block ml-2"
                   fill="none"

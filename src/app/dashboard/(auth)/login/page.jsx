@@ -25,6 +25,9 @@ const Login = () => {
       });
     }
   };
+  useEffect(() => {
+    window.relo;
+  });
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -65,6 +68,7 @@ const Login = () => {
 
   useEffect(() => {
     if (login) {
+      console.log("login");
       router.push("/");
     }
   }, [login]);
