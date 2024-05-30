@@ -9,7 +9,6 @@ async function verifyToken(authToken) {
     // Return the decoded user data
     return decoded;
   } catch (error) {
-    // Token verification failed
     return null;
   }
 }

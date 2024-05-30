@@ -44,7 +44,6 @@ const Navbar = () => {
       });
     }
   };
-
   return (
     <nav className="bg-gradient-to-b from-green-500 to-green-700 p-4 fixed top-0 left-0 w-full ">
       <div className="flex items-center justify-between">
