@@ -51,6 +51,7 @@ export default function Home() {
         },
       });
     } catch (error) {
+      console.log(error);
       toast.error(`${error.response.data.message}`, {
         position: "top-center",
         autoClose: 5000,
@@ -154,7 +155,7 @@ export default function Home() {
       console.log();
       if (device) {
         setbluetooths(true);
-        getLocationandIp();
+        getLocationandIp(e);
       }
       console.log("Bluetooth device connected:", device);
     } catch (error) {
