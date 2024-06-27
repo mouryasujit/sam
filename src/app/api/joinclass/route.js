@@ -281,8 +281,8 @@ export async function POST(request) {
         name: user.name,
         rollno: user.rollno,
         div: user.division,
-        Date: new Date().toLocaleDateString(),
-        JoinedTime: new Date().toLocaleTimeString(),
+        Date: new Date(),
+        JoinedTime: new Date(),
       };
       classData.students.push(studentData);
     }
