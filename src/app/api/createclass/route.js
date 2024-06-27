@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import Connect from "@/utils/db";
 import Class from "@/models/Class";
+import ExtractTextFromImage from "@/utils/ImageExtraction";
+import verifyToken from "@/utils/verifyToken";
+// import bodyParser from "body-parser";
+import upload from "@/utils/Upload";
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
 Connect();
-import verifyToken from "@/utils/verifyToken"; // Import the verifyToken function
 
-export async function POST(request) {
+export async function POST(request) {//nprmal app.post(/mainfunction(decoded))
   try {
-    const reqBody = await request.json();
+    const reqBody = request.json();
+    // const image = await upload.single("Image");
+    console.log(reqBody);
+    return NextResponse.json(
+      { message: "testing testing 1234" },
+      { status: 400 }
+    );
     const { location } = reqBody;
     if (
       !location ||
@@ -16,7 +27,6 @@ export async function POST(request) {
     ) {
       return NextResponse.json(
         { message: "Plaese provide a Location" },
-
         { status: 400 }
       );
     }
@@ -27,6 +37,7 @@ export async function POST(request) {
     const authToken = request.cookies._parsed.get("token")?.value || "";
 
     // Step 2: Verify the token
+
     const userData = await verifyToken(authToken);
     if (!userData) {
       return NextResponse.json(
@@ -35,10 +46,15 @@ export async function POST(request) {
       );
     }
 
-    // console.log("Request Body:", reqBody);
-
+    const ImageExtracted = await ExtractTextFromImage(reqBody.Image);
+    console.log("image", ImageExtracted);
+    if (ImageExtracted == null) {
+      return NextResponse.json({
+        Message: "Data not got",
+        status: "400",
+      });
+    }
     const newClass = new Class(reqBody);
-
     try {
       const savedClass = await newClass.save();
       console.log("Saved Class:", savedClass);

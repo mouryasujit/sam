@@ -19,14 +19,15 @@ export default function Home() {
   const [ipAddTeacher, setIpAddTeacher] = useState();
   const [Join, Setjoin] = useState();
   const [blueths, setbluetooths] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const [classCreater, setClass] = useState({
     name: "",
     classname: "",
     email: "",
+    Image: "",
   });
 
-  //joining class
-
+  // Joining class
   const handlejoin = async (e) => {
     e.preventDefault();
     try {
@@ -44,7 +45,7 @@ export default function Home() {
           render: (response) => {
             if (res.data.success) {
               router.push(`/class/${res?.data?.classData._id}`);
-              return "class joined successfully";
+              return "Class joined successfully";
             }
           },
           duration: 5000,
@@ -59,8 +60,7 @@ export default function Home() {
     }
   };
 
-  // get unique code
-
+  // Get unique code
   function generateUniqueCode() {
     const uniqueId = uuidv4().replace(/-/g, ""); // Remove dashes from UUID
     const uniqueCode = uniqueId.slice(0, 8); // Extract the first 8 characters
@@ -87,30 +87,26 @@ export default function Home() {
     }
   };
 
-  //for creating class
+  // For creating class
   const handlePost = async (e) => {
     e.preventDefault();
     try {
-      const classData = {
-        name: classCreater.name,
-        classname: classCreater.classname,
-        email: classCreater.email,
-        passcode: unique,
-        location: { latitude, longitude },
-        ipAddTeacher: ipAddTeacher, // Value from the state
-      };
-      // console.log(classData);
+      classCreater.Image = imageFile;
+      console.log(classCreater);
       const res = await toast.promise(
-        axios.post("/api/createclass", classData),
+        axios.post("/api/createclass", classCreater, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
         {
           position: "top-center",
           pending: "Checking User...",
           success: {
             render: (response) => {
               if (res.data.success) {
-                // Check for success property
                 router.push(`/class/${res?.data?.savedClass._id}`);
-                return "class created successfully";
+                return "Class created successfully";
               }
             },
             duration: 5000,
@@ -120,7 +116,7 @@ export default function Home() {
 
       console.log(res.data);
     } catch (error) {
-      toast.error(`${error.response.data.message}`, {
+      toast.error(`${error.response.message}`, {
         position: "top-center",
         autoClose: 5000,
       });
@@ -135,6 +131,10 @@ export default function Home() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const hClassCreaterBluetooth = async (e) => {
     e.preventDefault();
     try {
@@ -146,13 +146,13 @@ export default function Home() {
       console.error("Error connecting to Bluetooth device:", error);
     }
   };
+
   const handleEnableBluetooth = async (e) => {
     e.preventDefault();
     try {
       const device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
       });
-      console.log();
       if (device) {
         setbluetooths(true);
         getLocationandIp(e);
@@ -324,6 +324,17 @@ export default function Home() {
                       value={unique || ""}
                       className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
                       onChange={handleChange}
+                    />
+                    <label htmlFor="Image" className="w-[6vw]">
+                      Image:
+                    </label>
+                    <input
+                      type="file"
+                      placeholder="Upload A image Containing "
+                      required
+                      name="Image"
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={handleFileChange}
                     />
                   </div>
                   <div className="div w-full flex items-center  gap-5 ">
