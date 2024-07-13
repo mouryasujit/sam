@@ -109,13 +109,13 @@ const Login = () => {
           </Link>
           <hr className="w-full" />
         </form>
-        <h1 className="font-bold text-white my-2 "> Or </h1>
-        <button
+        {/* <h1 className="font-bold text-white my-2 "> Or </h1> */}
+        {/* <button
           className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-14 px-1 "
           onClick={() => signIn("google")}
         >
           Login with google
-        </button>
+        </button> */}
       </div>
     </>
   );
