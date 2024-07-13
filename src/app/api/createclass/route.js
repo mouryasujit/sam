@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Connect from "@/utils/db";
 import Class from "@/models/Class";
-import ExtractTextFromImage from "@/utils/ImageExtraction";
 import verifyToken from "@/utils/verifyToken";
-// import bodyParser from "body-parser";
-import upload from "@/utils/Upload";
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
 
 Connect();
 
