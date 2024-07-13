@@ -35,6 +35,9 @@ const classSchema = new Schema(
       type: String,
       required: true,
     },
+    imageFile: {
+      type: [{ type: String }],
+    },
   },
   { timestamps: true }
 );

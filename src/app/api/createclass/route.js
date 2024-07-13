@@ -1,22 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import Connect from "@/utils/db";
 import Class from "@/models/Class";
+import ExtractTextFromImage from "@/utils/ImageExtraction";
+import verifyToken from "@/utils/verifyToken";
+// import bodyParser from "body-parser";
+import upload from "@/utils/Upload";
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
 Connect();
-import verifyToken from "@/utils/verifyToken"; // Import the verifyToken function
 
 export async function POST(request) {
+  //nprmal app.post(/mainfunction(decoded))
   try {
     const reqBody = await request.json();
+    console.log(reqBody);
     const { location } = reqBody;
     if (
       !location ||
       location.latitude === undefined ||
       location.longitude === undefined
     ) {
+      console.log("inside else");
       return NextResponse.json(
         { message: "Plaese provide a Location" },
-
         { status: 400 }
       );
     }
@@ -27,18 +34,16 @@ export async function POST(request) {
     const authToken = request.cookies._parsed.get("token")?.value || "";
 
     // Step 2: Verify the token
+
     const userData = await verifyToken(authToken);
     if (!userData) {
+      console.log("inside else");
       return NextResponse.json(
         { message: "Please login before creating class", error: true },
         { status: 401 }
       );
     }
-
-    // console.log("Request Body:", reqBody);
-
     const newClass = new Class(reqBody);
-
     try {
       const savedClass = await newClass.save();
       console.log("Saved Class:", savedClass);

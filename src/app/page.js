@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 const { v4: uuidv4 } = require("uuid");
+import { createWorker } from "tesseract.js";
+import nlp from "compromise";
 
 export default function Home() {
   const router = useRouter();
@@ -19,14 +21,11 @@ export default function Home() {
   const [ipAddTeacher, setIpAddTeacher] = useState();
   const [Join, Setjoin] = useState();
   const [blueths, setbluetooths] = useState(false);
-  const [classCreater, setClass] = useState({
-    name: "",
-    classname: "",
-    email: "",
-  });
+  const [imageFile, setImageFile] = useState([]);
+  const [classCreater, setClass] = useState({});
+  const [isclass, isclassstate] = useState(false);
 
-  //joining class
-
+  // Joining class
   const handlejoin = async (e) => {
     e.preventDefault();
     try {
@@ -44,7 +43,7 @@ export default function Home() {
           render: (response) => {
             if (res.data.success) {
               router.push(`/class/${res?.data?.classData._id}`);
-              return "class joined successfully";
+              return "Class joined successfully";
             }
           },
           duration: 5000,
@@ -59,8 +58,7 @@ export default function Home() {
     }
   };
 
-  // get unique code
-
+  // Get unique code
   function generateUniqueCode() {
     const uniqueId = uuidv4().replace(/-/g, ""); // Remove dashes from UUID
     const uniqueCode = uniqueId.slice(0, 8); // Extract the first 8 characters
@@ -75,9 +73,8 @@ export default function Home() {
       const position = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
-
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
+      await setLatitude(position.coords.latitude);
+      await setLongitude(position.coords.longitude);
 
       const response = await fetch("https://api.ipify.org?format=json");
       const data = await response.json();
@@ -87,30 +84,43 @@ export default function Home() {
     }
   };
 
-  //for creating class
-  const handlePost = async (e) => {
-    e.preventDefault();
+  // For creating class
+  const extendsc = async () => {
+    setClass((prev) => ({
+      ...prev,
+      imageFile,
+      location: { latitude, longitude },
+      ipAddTeacher,
+      passcode: unique,
+    }));
+    isclassstate(true);
+    return 1;
+  };
+  useEffect(() => {
+    if (isclass) {
+      handlePost();
+    }
+  }, [isclass]);
+
+  const handlePost = async () => {
     try {
-      const classData = {
-        name: classCreater.name,
-        classname: classCreater.classname,
-        email: classCreater.email,
-        passcode: unique,
-        location: { latitude, longitude },
-        ipAddTeacher: ipAddTeacher, // Value from the state
-      };
-      // console.log(classData);
+      await extendsc();
+      console.log(classCreater);
       const res = await toast.promise(
-        axios.post("/api/createclass", classData),
+        axios.post("/api/createclass", classCreater, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }),
         {
           position: "top-center",
           pending: "Checking User...",
           success: {
             render: (response) => {
-              if (res.data.success) {
-                // Check for success property
+              if (res?.data?.success) {
+                console.log(res.data);
                 router.push(`/class/${res?.data?.savedClass._id}`);
-                return "class created successfully";
+                return "Class created successfully";
               }
             },
             duration: 5000,
@@ -120,7 +130,7 @@ export default function Home() {
 
       console.log(res.data);
     } catch (error) {
-      toast.error(`${error.response.data.message}`, {
+      toast.error(`${error.response?.message}`, {
         position: "top-center",
         autoClose: 5000,
       });
@@ -135,6 +145,25 @@ export default function Home() {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const imageUrl = URL.createObjectURL(e.target.files[0]);
+
+    const data = async () => {
+      const worker = await createWorker("eng");
+      const ret = await worker.recognize(imageUrl);
+      // console.log(ret.data.text);
+      await worker.terminate();
+      const namesArray = ret.data.text
+        .split("\n")
+        .map((name) => name.trim())
+        .filter((name) => name != "");
+      // console.log(namesArray);
+      setImageFile(namesArray);
+      return namesArray;
+    };
+    data();
+  };
+
   const hClassCreaterBluetooth = async (e) => {
     e.preventDefault();
     try {
@@ -146,13 +175,13 @@ export default function Home() {
       console.error("Error connecting to Bluetooth device:", error);
     }
   };
+
   const handleEnableBluetooth = async (e) => {
     e.preventDefault();
     try {
       const device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
       });
-      console.log();
       if (device) {
         setbluetooths(true);
         getLocationandIp(e);
@@ -301,10 +330,11 @@ export default function Home() {
                     />
                   </div>
                   <div className="div w-full flex items-center  gap-5 ">
-                    <label htmlFor="Email" className="w-max">
+                    <label htmlFor="Ipaddress" className="w-max">
                       Give location access:
                     </label>
                     <button
+                      name="Ipaddress"
                       className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 w-16 "
                       onClick={getLocationandIp}
                     >
@@ -312,18 +342,29 @@ export default function Home() {
                     </button>
                   </div>
                   <div className="div w-full flex  items-center  gap-5">
-                    <label htmlFor="Email" className="w-[6vw]">
+                    <label htmlFor="passcode" className="w-[6vw]">
                       Passcode:
                     </label>
                     <input
                       type="text"
                       placeholder="Get your passcode here"
                       required
-                      name="email"
+                      name="passcode"
                       onFocus={generateUniqueCode}
                       value={unique || ""}
                       className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
                       onChange={handleChange}
+                    />
+                    <label htmlFor="Image" className="w-[6vw]">
+                      Image:
+                    </label>
+                    <input
+                      type="file"
+                      placeholder="Upload A image Containing "
+                      required
+                      name="Image"
+                      className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
+                      onChange={handleFileChange}
                     />
                   </div>
                   <div className="div w-full flex items-center  gap-5 ">
@@ -338,9 +379,9 @@ export default function Home() {
                     </button>
                   </div>
                   <button
-                    type="submit"
+                    type="button"
                     className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
-                    onClick={handlePost}
+                    onClick={extendsc}
                   >
                     Create Seminar
                   </button>
