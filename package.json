@@ -12,6 +12,7 @@
     "autoprefixer": "10.4.14",
     "axios": "^1.5.1",
     "bcrypt": "^5.1.0",
+    "compromise": "^14.13.0",
     "encoding": "^0.1.13",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",

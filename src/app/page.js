@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 const { v4: uuidv4 } = require("uuid");
+import { createWorker } from "tesseract.js";
+import nlp from "compromise";
 
 export default function Home() {
   const router = useRouter();
@@ -19,13 +21,9 @@ export default function Home() {
   const [ipAddTeacher, setIpAddTeacher] = useState();
   const [Join, Setjoin] = useState();
   const [blueths, setbluetooths] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
-  const [classCreater, setClass] = useState({
-    name: "",
-    classname: "",
-    email: "",
-    Image: "",
-  });
+  const [imageFile, setImageFile] = useState([]);
+  const [classCreater, setClass] = useState({});
+  const [isclass, isclassstate] = useState(false);
 
   // Joining class
   const handlejoin = async (e) => {
@@ -75,9 +73,8 @@ export default function Home() {
       const position = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
-
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
+      await setLatitude(position.coords.latitude);
+      await setLongitude(position.coords.longitude);
 
       const response = await fetch("https://api.ipify.org?format=json");
       const data = await response.json();
@@ -88,15 +85,31 @@ export default function Home() {
   };
 
   // For creating class
-  const handlePost = async (e) => {
-    e.preventDefault();
+  const extendsc = async () => {
+    setClass((prev) => ({
+      ...prev,
+      imageFile,
+      location: { latitude, longitude },
+      ipAddTeacher,
+      passcode: unique,
+    }));
+    isclassstate(true);
+    return 1;
+  };
+  useEffect(() => {
+    if (isclass) {
+      handlePost();
+    }
+  }, [isclass]);
+
+  const handlePost = async () => {
     try {
-      classCreater.Image = imageFile;
+      await extendsc();
       console.log(classCreater);
       const res = await toast.promise(
         axios.post("/api/createclass", classCreater, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }),
         {
@@ -104,7 +117,8 @@ export default function Home() {
           pending: "Checking User...",
           success: {
             render: (response) => {
-              if (res.data.success) {
+              if (res?.data?.success) {
+                console.log(res.data);
                 router.push(`/class/${res?.data?.savedClass._id}`);
                 return "Class created successfully";
               }
@@ -116,7 +130,7 @@ export default function Home() {
 
       console.log(res.data);
     } catch (error) {
-      toast.error(`${error.response.message}`, {
+      toast.error(`${error.response?.message}`, {
         position: "top-center",
         autoClose: 5000,
       });
@@ -132,7 +146,22 @@ export default function Home() {
   };
 
   const handleFileChange = (e) => {
-    setImageFile(e.target.files[0]);
+    const imageUrl = URL.createObjectURL(e.target.files[0]);
+
+    const data = async () => {
+      const worker = await createWorker("eng");
+      const ret = await worker.recognize(imageUrl);
+      // console.log(ret.data.text);
+      await worker.terminate();
+      const namesArray = ret.data.text
+        .split("\n")
+        .map((name) => name.trim())
+        .filter((name) => name != "");
+      // console.log(namesArray);
+      setImageFile(namesArray);
+      return namesArray;
+    };
+    data();
   };
 
   const hClassCreaterBluetooth = async (e) => {
@@ -301,10 +330,11 @@ export default function Home() {
                     />
                   </div>
                   <div className="div w-full flex items-center  gap-5 ">
-                    <label htmlFor="Email" className="w-max">
+                    <label htmlFor="Ipaddress" className="w-max">
                       Give location access:
                     </label>
                     <button
+                      name="Ipaddress"
                       className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 w-16 "
                       onClick={getLocationandIp}
                     >
@@ -312,14 +342,14 @@ export default function Home() {
                     </button>
                   </div>
                   <div className="div w-full flex  items-center  gap-5">
-                    <label htmlFor="Email" className="w-[6vw]">
+                    <label htmlFor="passcode" className="w-[6vw]">
                       Passcode:
                     </label>
                     <input
                       type="text"
                       placeholder="Get your passcode here"
                       required
-                      name="email"
+                      name="passcode"
                       onFocus={generateUniqueCode}
                       value={unique || ""}
                       className="h-10 rounded-lg w-[80%] border-2 border-green-500 p-2 font-bold text-lg bg-black text-white "
@@ -349,9 +379,9 @@ export default function Home() {
                     </button>
                   </div>
                   <button
-                    type="submit"
+                    type="button"
                     className="text-white border-2 border-green-500 bg-green-500 rounded-lg h-12 "
-                    onClick={handlePost}
+                    onClick={extendsc}
                   >
                     Create Seminar
                   </button>

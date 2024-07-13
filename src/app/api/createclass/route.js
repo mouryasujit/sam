@@ -10,21 +10,18 @@ import upload from "@/utils/Upload";
 
 Connect();
 
-export async function POST(request) {//nprmal app.post(/mainfunction(decoded))
+export async function POST(request) {
+  //nprmal app.post(/mainfunction(decoded))
   try {
-    const reqBody = request.json();
-    // const image = await upload.single("Image");
+    const reqBody = await request.json();
     console.log(reqBody);
-    return NextResponse.json(
-      { message: "testing testing 1234" },
-      { status: 400 }
-    );
     const { location } = reqBody;
     if (
       !location ||
       location.latitude === undefined ||
       location.longitude === undefined
     ) {
+      console.log("inside else");
       return NextResponse.json(
         { message: "Plaese provide a Location" },
         { status: 400 }
@@ -40,19 +37,11 @@ export async function POST(request) {//nprmal app.post(/mainfunction(decoded))
 
     const userData = await verifyToken(authToken);
     if (!userData) {
+      console.log("inside else");
       return NextResponse.json(
         { message: "Please login before creating class", error: true },
         { status: 401 }
       );
-    }
-
-    const ImageExtracted = await ExtractTextFromImage(reqBody.Image);
-    console.log("image", ImageExtracted);
-    if (ImageExtracted == null) {
-      return NextResponse.json({
-        Message: "Data not got",
-        status: "400",
-      });
     }
     const newClass = new Class(reqBody);
     try {
